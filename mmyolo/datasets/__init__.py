@@ -10,5 +10,5 @@ from .yolov5_voc import YOLOv5VOCDataset
 __all__ = [
     'YOLOv5CocoDataset', 'YOLOv5VOCDataset', 'BatchShapePolicy',
     'yolov5_collate', 'YOLOv5CrowdHumanDataset', 'YOLOv5DOTADataset',
-    'PoseCocoDataset'
+    'PoseCocoDataset', 'YOLOv5Hod3kdsaDataset'
 ]

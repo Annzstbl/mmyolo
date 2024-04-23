@@ -1,16 +1,31 @@
+'''
+Author: annzstbl@tianhaoli1996@gmail.com
+Date: 2024-04-17 10:03:29
+LastEditors: annzstbl@tianhaoli1996@gmail.com
+LastEditTime: 2024-04-23 14:25:07
+FilePath: /mmyolo/configs/yolov8/yolov8_s_syncbn_fast_8xb16-500e_coco.py
+Description: 
+
+Copyright (c) 2024 by ${annzstbl}, All Rights Reserved. 
+'''
 _base_ = ['../_base_/default_runtime.py', '../_base_/det_p5_tta.py']
 
 # ========================Frequently modified parameters======================
-# -----data related-----
-data_root = 'data/coco/'  # Root path of data
-# Path of train annotation file
-train_ann_file = 'annotations/instances_train2017.json'
-train_data_prefix = 'train2017/'  # Prefix of train image path
-# Path of val annotation file
-val_ann_file = 'annotations/instances_val2017.json'
-val_data_prefix = 'val2017/'  # Prefix of val image path
+# # -----tensorboard------
+# visualizer = dict(vis_backends=[dict(type='LocalVisBackend'), dict(type='TensorboardVisBackend')])
+# wandb
+visualizer = dict(vis_backends = [dict(type='LocalVisBackend'), dict(type='WandbVisBackend')])
 
-num_classes = 80  # Number of classes for classification
+# -----data related-----
+data_root = '/data3/litianhao/datasets/HOD3K/hsidetection/sa_information/'  # Root path of data
+# Path of train annotation file
+train_ann_file = 'annotations/train.json'
+train_data_prefix = 'images/train'  # Prefix of train image path
+# Path of val annotation file
+val_ann_file = 'annotations/test.json'
+val_data_prefix = 'images/test'  # Prefix of val image path
+
+num_classes = 4  # Number of classes for classification
 # Batch size of a single GPU during training
 train_batch_size_per_gpu = 16
 # Worker to pre-fetch data for each single GPU during training
@@ -21,7 +36,11 @@ persistent_workers = True
 # -----train val related-----
 # Base learning rate for optim_wrapper. Corresponding to 8xb16=64 bs
 base_lr = 0.01
-max_epochs = 500  # Maximum training epochs
+max_epochs = 5  # Maximum training epochs
+# warmup, take the max iterations from [warmup_epochs * len(dataloader), warmup_mim_iter]
+warmup_epochs = 3  # The number of warmup epochs
+warmup_mim_iter = 100  # The number of warmup iterations
+
 # Disable mosaic augmentation for final 10 epochs (stage 2)
 close_mosaic_epochs = 10
 
@@ -38,7 +57,7 @@ model_test_cfg = dict(
 # -----data related-----
 img_scale = (640, 640)  # width, height
 # Dataset type, this will be used to define the dataset
-dataset_type = 'YOLOv5CocoDataset'
+dataset_type = 'YOLOv5Hod3kdsaDataset'
 # Batch size of a single GPU during validation
 val_batch_size_per_gpu = 1
 # Worker to pre-fetch data for each single GPU during validation
@@ -295,7 +314,9 @@ default_hooks = dict(
         type='YOLOv5ParamSchedulerHook',
         scheduler_type='linear',
         lr_factor=lr_factor,
-        max_epochs=max_epochs),
+        max_epochs=max_epochs,
+        warmup_epochs=warmup_epochs,
+        warmup_mim_iter=warmup_mim_iter),
     checkpoint=dict(
         type='CheckpointHook',
         interval=save_epoch_intervals,

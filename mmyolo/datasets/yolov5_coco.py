@@ -2,6 +2,7 @@
 from typing import Any, Optional
 
 from mmdet.datasets import BaseDetDataset, CocoDataset
+from mmdet.datasets import Hod3kSaDataset
 
 from ..registry import DATASETS, TASK_UTILS
 
@@ -58,6 +59,15 @@ class BatchShapePolicyDataset(BaseDetDataset):
 @DATASETS.register_module()
 class YOLOv5CocoDataset(BatchShapePolicyDataset, CocoDataset):
     """Dataset for YOLOv5 COCO Dataset.
+
+    We only add `BatchShapePolicy` function compared with CocoDataset. See
+    `mmyolo/datasets/utils.py#BatchShapePolicy` for details
+    """
+    pass
+
+@DATASETS.register_module()
+class YOLOv5Hod3kdsaDataset(BatchShapePolicyDataset, Hod3kSaDataset):
+    """Dataset for YOLOv5 Hod3ksa Dataset.
 
     We only add `BatchShapePolicy` function compared with CocoDataset. See
     `mmyolo/datasets/utils.py#BatchShapePolicy` for details
